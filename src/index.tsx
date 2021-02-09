@@ -1,8 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
+import './index.css';
 import reportWebVitals from './reportWebVitals';
+
+// Hack: To prevent scrolling on iOS Safari
+window.onresize = function () {
+  document.body.style.height = `${window.innerHeight}px`;
+}
+window.onresize(0 as any);
+// End Hack: To prevent scrolling on iOS Safari
 
 ReactDOM.render(
   <React.StrictMode>

@@ -7,10 +7,17 @@ import Cropper from './components/Cropper';
 import Tools from './components/Tools';
 
 function App() {
-  const position = [51.505, -0.09] as LatLngTuple;
+  const position = [47.61, -122.48] as LatLngTuple;
 
   return (
-    <MapContainer center={position} zoom={13} scrollWheelZoom={false} maxZoom={20} style={{ height: '100vh' }}>
+    <MapContainer
+      center={position}
+      zoom={11}
+      maxZoom={20}
+      maxBounds={[[-90, -360], [90, 360]]}
+      maxBoundsViscosity={1}
+      style={{ height: '100%' }}
+    >
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

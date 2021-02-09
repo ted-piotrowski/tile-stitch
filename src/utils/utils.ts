@@ -92,7 +92,7 @@ interface MergeImageOptions {
 const canvas = document.createElement("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d");
 
-export const mergeImages = async (tiles: XYZRaster[], options: MergeImageOptions) => {
+export const mergeImages = async (tiles: XYZRaster[], options: MergeImageOptions, cb: Function) => {
     const { width, height, crossOrigin } = options;
     canvas.width = width;
     canvas.height = height;
@@ -103,6 +103,7 @@ export const mergeImages = async (tiles: XYZRaster[], options: MergeImageOptions
                 img.onload = () => {
                     ctx.drawImage(img, tile.xOffset, tile.yOffset, 256, 256);
                     res(null);
+                    cb();
                 };
                 img.onerror = res;
                 img.crossOrigin = crossOrigin || null;
