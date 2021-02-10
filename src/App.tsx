@@ -7,12 +7,12 @@ import Cropper from './components/Cropper';
 import Tools from './components/Tools';
 
 function App() {
-  const position = [47.61, -122.48] as LatLngTuple;
+  const position = [47.64, -122.28] as LatLngTuple;
 
   return (
     <MapContainer
       center={position}
-      zoom={11}
+      zoom={13}
       maxZoom={20}
       maxBounds={[[-90, -360], [90, 360]]}
       maxBoundsViscosity={1}
