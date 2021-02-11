@@ -1,18 +1,25 @@
-import L from 'leaflet';
+import L, { Point } from 'leaflet';
 import React, { useEffect, useRef, useState } from 'react';
-import { mergeImages } from '../utils/utils';
+import { useMap } from 'react-leaflet';
+import { createTileRaster, mergeImages, xyz } from '../utils/utils';
 
 interface Props {
-    raster: any;
+    nw: Point;
+    se: Point;
+    xOffset: number;
+    yOffset: number;
     width: number;
     height: number;
+    tileCount: number;
 }
 
 const Download = (props: Props) => {
-    const { raster, width, height } = props;
+    const { nw, se, xOffset, yOffset, width, height, tileCount } = props;
 
     const [inProgress, setInProgress] = useState(false);
     const [count, setCount] = useState(0);
+
+    const map = useMap();
 
     const ref = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -30,13 +37,18 @@ const Download = (props: Props) => {
         if (inProgress) {
             return;
         }
-        if (raster.length > 3000) {
+        const xyzTiles = xyz({ nw, se, zoom: map.getMaxZoom() });
+        const tileUrl = `https://khms1.google.com/kh/v=874?x={x}&y={y}&z={z}`; //${process.env.REACT_APP_MAPBOX_KEY}`
+        const raster = createTileRaster(xyzTiles, tileUrl);
+        if (tileCount > 3000) {
             alert('Please choose an area that is less than 3000 tiles');
             return;
         }
         setInProgress(true);
         try {
             const imageURI = await mergeImages(raster, {
+                xOffset,
+                yOffset,
                 width,
                 height,
                 crossOrigin: 'Anonymous'
@@ -61,7 +73,7 @@ const Download = (props: Props) => {
     return (
         <div ref={ref}>
             <button role='button' onClick={download} disabled={inProgress}>Download</button>
-            {inProgress ? `${Math.floor(count / raster.length * 100)}%` : ''}
+            {inProgress ? `${Math.floor(count / tileCount * 100)}%` : ''}
         </div>
     )
 }

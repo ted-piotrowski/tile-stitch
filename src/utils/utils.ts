@@ -17,10 +17,7 @@ export const xyz = (params: XYZParams): XYZ[] => {
     const { nw, se, zoom } = params;
 
     const min = nw.divideBy(TILE_SIZE).floor();
-    const max = {
-        x: Math.floor((se.x + TILE_SIZE) / TILE_SIZE),
-        y: Math.floor((se.y + TILE_SIZE) / TILE_SIZE),
-    }
+    const max = se.divideBy(TILE_SIZE).floor();
     const xyz = [];
 
     for (var i = min.x; i <= max.x; i++) {
@@ -73,17 +70,9 @@ export const createTileRaster = (xyzTiles: XYZ[], tileUrl: string): XYZRaster[] 
     return merged
 }
 
-export const getDimensions = (data: XYZRaster[]) => {
-    const width = data.reduce((prev, cur) => {
-        return (cur.xOffset > prev.xOffset) ? cur : prev;
-    }).xOffset + TILE_SIZE;
-    const height = data.reduce((prev, cur) => {
-        return (cur.yOffset > prev.yOffset) ? cur : prev;
-    }).yOffset + TILE_SIZE;
-    return { width, height }
-}
-
 interface MergeImageOptions {
+    xOffset: number;
+    yOffset: number;
     width: number;
     height: number;
     crossOrigin?: string;
@@ -93,7 +82,7 @@ const canvas = document.createElement("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d");
 
 export const mergeImages = async (tiles: XYZRaster[], options: MergeImageOptions, cb: Function) => {
-    const { width, height, crossOrigin } = options;
+    const { xOffset, yOffset, width, height, crossOrigin } = options;
     canvas.width = width;
     canvas.height = height;
     if (ctx) {
@@ -101,7 +90,7 @@ export const mergeImages = async (tiles: XYZRaster[], options: MergeImageOptions
             return new Promise((res, rej) => {
                 const img = new Image();
                 img.onload = () => {
-                    ctx.drawImage(img, tile.xOffset, tile.yOffset, 256, 256);
+                    ctx.drawImage(img, tile.xOffset - xOffset, tile.yOffset - yOffset, 256, 256);
                     res(null);
                     cb();
                 };
