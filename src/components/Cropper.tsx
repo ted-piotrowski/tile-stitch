@@ -49,7 +49,7 @@ const Cropper = () => {
     if (width !== 0 && height !== 0) {
         metaJSX = (
             <div className='leaflet-bar leaflet-control' style={{ zIndex: 1200, position: 'absolute', right: 0, top: 0, backgroundColor: 'white', padding: 10 }}>
-                ({width}x{height}) {tileCount} tiles ({(tileCount * 0.015).toFixed(2)}MB) {xOffset} {yOffset}
+                ({width}x{height}) {tileCount} tiles (~{(tileCount * 0.017).toFixed(2)}MB)
                 <Download nw={nw} se={se} xOffset={xOffset} yOffset={yOffset} width={width} height={height} tileCount={tileCount} />
             </div>
         );
