@@ -11,10 +11,11 @@ interface Props {
     width: number;
     height: number;
     tileCount: number;
+    zoom: number;
 }
 
 const Download = (props: Props) => {
-    const { nw, se, xOffset, yOffset, width, height, tileCount } = props;
+    const { nw, se, xOffset, yOffset, width, height, tileCount, zoom } = props;
 
     const [inProgress, setInProgress] = useState(false);
     const [count, setCount] = useState(0);
@@ -37,11 +38,11 @@ const Download = (props: Props) => {
         if (inProgress) {
             return;
         }
-        const xyzTiles = xyz({ nw, se, zoom: map.getMaxZoom() });
+        const xyzTiles = xyz({ nw, se, zoom });
         const tileUrl = `https://khms1.google.com/kh/v=874?x={x}&y={y}&z={z}`; //${process.env.REACT_APP_MAPBOX_KEY}`
         const raster = createTileRaster(xyzTiles, tileUrl);
-        if (tileCount > 3000) {
-            alert('Please choose an area that is less than 3000 tiles');
+        if (tileCount > 4000) {
+            alert('Please choose an area that is less than 4000 tiles');
             return;
         }
         setInProgress(true);

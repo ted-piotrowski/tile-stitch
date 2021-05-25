@@ -37,20 +37,31 @@ const Cropper = () => {
         }
     })
 
-    const p1 = map.project(path[0], map.getMaxZoom());
-    const p2 = map.project(path[1], map.getMaxZoom());
-    const nw = new Point(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y)).floor();
-    const se = new Point(Math.max(p1.x, p2.x), Math.max(p1.y, p2.y)).floor();
-    const { x: width, y: height } = se.subtract(nw);
-    const xOffset = nw.x % TILE_SIZE;
-    const yOffset = nw.y % TILE_SIZE;
-    const tileCount = Math.ceil(width / TILE_SIZE) * Math.ceil(height / TILE_SIZE);
+    let zoom = map.getMaxZoom();
+    let newZoom = zoom;
+    let nw, se, width, height, xOffset, yOffset, tileCount, fileSize;
+    do {
+        zoom = newZoom;
+        const p1 = map.project(path[0], zoom);
+        const p2 = map.project(path[1], zoom);
+        nw = new Point(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y)).floor();
+        se = new Point(Math.max(p1.x, p2.x), Math.max(p1.y, p2.y)).floor();
+        const { x, y } = se.subtract(nw);
+        width = x;
+        height = y;
+        xOffset = nw.x % TILE_SIZE;
+        yOffset = nw.y % TILE_SIZE;
+        tileCount = Math.ceil(width / TILE_SIZE) * Math.ceil(height / TILE_SIZE);
+        fileSize = tileCount * 0.017;
+        newZoom--;
+    } while (fileSize > 50);
+
     let metaJSX = null;
     if (width !== 0 && height !== 0) {
         metaJSX = (
             <div className='leaflet-bar leaflet-control' style={{ zIndex: 1200, position: 'absolute', right: 0, top: 0, backgroundColor: 'white', padding: 10 }}>
-                ({width}x{height}) {tileCount} tiles (~{(tileCount * 0.017).toFixed(2)}MB)
-                <Download nw={nw} se={se} xOffset={xOffset} yOffset={yOffset} width={width} height={height} tileCount={tileCount} />
+                ({width}x{height}) zoom:{zoom} {tileCount} tiles (~{fileSize.toFixed(2)}MB)
+                <Download nw={nw} se={se} xOffset={xOffset} yOffset={yOffset} width={width} height={height} tileCount={tileCount} zoom={zoom} />
             </div>
         );
     }
